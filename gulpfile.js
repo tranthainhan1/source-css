@@ -1,4 +1,3 @@
-// generated on 2020-05-29 using generator-webapp 4.0.0-5
 const { src, dest, watch, series, parallel, lastRun, task } = require("gulp");
 const browserSync = require("browser-sync").create();
 const fs = require("fs");
@@ -15,11 +14,11 @@ const port = argv.port || 9000;
 /**
  *------------------------ NEED TO DECLARE OPTION HERE ------------------------------------------
  */
-const shopifyHost = "https://funsc-theme.myshopify.com";
-const password = "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";
-const themeID = "113949769879";
-const proxy = `${shopifyHost}?preview_theme_id=${themeID}`;
-// const proxy = `${shopifyHost}`;
+const shopifyHost = "";
+const password = "";
+const themeID = "";
+// const proxy = `${shopifyHost}?preview_theme_id=${themeID}`;
+const proxy = `${shopifyHost}`;
 
 const debounce = (func, wait) => {
   let timeout;
@@ -46,7 +45,7 @@ function buildCss(filePath) {
         plugins.postcss([
           cssnano({ safe: true, autoprefixer: true }),
           autoprefixer({
-            overrideBrowserslist: ["last 3 versions", "iOS >= 8", "Safari >= 8", "ie 11", "Firefox >= 4"],
+            overrideBrowserslist: ["safari >= 10", "last 1 version", "ios >= 10", "ie >= 10"],
           }),
         ])
       )
@@ -104,7 +103,9 @@ async function startServer() {
 }
 
 async function build() {
-  fs.readdirSync("app/scripts/", { withFileTypes: true })
+  console.time("test");
+  let arrPromise = fs
+    .readdirSync("app/styles/", { withFileTypes: true })
     .filter((item) => !item.isDirectory())
     .map((item) => {
       let filePath = "app/styles/" + item.name;
@@ -115,7 +116,7 @@ async function build() {
             plugins.postcss([
               cssnano({ safe: true, autoprefixer: true }),
               autoprefixer({
-                overrideBrowserslist: ["last 3 versions", "iOS >= 8", "Safari >= 8", "ie 11", "Firefox >= 4"],
+                overrideBrowserslist: ["safari >= 10", "last 1 version", "ios >= 10", "ie >= 10"],
               }),
             ])
           )
@@ -126,9 +127,21 @@ async function build() {
           .pipe(dest("theme/assets"))
           .on("end", function () {
             console.log(path.basename(filePath) + ": Finish");
+            resolve(path.basename(filePath, ".scss") + ".css");
           });
       });
     });
+
+  Promise.all(arrPromise).then((res) => {
+    console.timeEnd("test");
+    npmRun.exec(
+      `cd theme && theme deploy -a --allow-live ${res.map((item) => "assets/" + item).join(" ")}`,
+      function (err, stdout, stderr) {
+        if (stdout) console.log(stdout);
+        if (stderr) console.log(stderr);
+      }
+    );
+  });
 }
 
 exports.serve = startServer;

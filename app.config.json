@@ -1,8 +1,9 @@
 {
   "main": [
-    "test"
+    "css-reset"
   ],
   "home": [
-    "test"
+    "header",
+    "footer"
   ]
 }
