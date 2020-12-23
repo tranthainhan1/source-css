@@ -1,0 +1,8 @@
+development:
+  password: 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
+  theme_id: "113949769879"
+  timeout: 600s
+  store: funsc-theme.myshopify.com
+  ignore_files:
+    - settings_data.json
+    - "*.js"
