@@ -103,7 +103,6 @@ async function startServer() {
 }
 
 async function build() {
-  console.time("test");
   let arrPromise = fs
     .readdirSync("app/styles/", { withFileTypes: true })
     .filter((item) => !item.isDirectory())
@@ -133,7 +132,6 @@ async function build() {
     });
 
   Promise.all(arrPromise).then((res) => {
-    console.timeEnd("test");
     npmRun.exec(
       `cd theme && theme deploy -a --allow-live ${res.map((item) => "assets/" + item).join(" ")}`,
       function (err, stdout, stderr) {
